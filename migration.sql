@@ -1,15 +1,15 @@
 -- Clear the table
 DROP TABLE IF EXISTS SolarSystem;
 
--- text is "undefined" length
--- varchar(255) is "255" length
-
 -- Create the table
-CREATE table SolarSystem (
-    id serial,
-    planet_name text,
-    type text,
-    atmosphere text,
-    gravity float,
-    life boolean
+CREATE TABLE SolarSystem (
+    id SERIAL PRIMARY KEY,
+    planet_name TEXT,
+    type TEXT,
+    atmosphere TEXT,
+    gravity FLOAT,
+    life BOOLEAN
 );
+
+-- Add the unique constraint
+ALTER TABLE SolarSystem ADD UNIQUE (planet_name);
