@@ -1,23 +1,42 @@
-import express, { query } from "express";
-// import fs from "fs"; no need to use this 
+//  this is for server side speak
+import express from "express";
+// import dotenv and set doten.config object 
+import dotenv from "dotenv";
+dotenv.config();
+
+// this is for DB speak plus more features
 import pg from "pg";
 
-// const fsPromise = fs.promises; no need to use this 
-
-const PORT = 8001;
+const PORT = process.env.PORT || 8001;
 
 const pool = new pg.Pool({
-    host: "localhost",
-    port: 5432,
-    user: "postgres",
-    password: "postgres",
-    database: "space"
+    connectionString:process.env.DATABASE_URL
 });
 
 const app = express();
 // middleware to accept json as request body
 app.use(express.json());
 
+
+// function handlePost(req, res) { ... }
+// handlePost({ body: "...", params: "...", Headers: "..." }, { status: 200, data: "..."});
+
+/*
+const exampleRequest = {
+    headers: {
+        "Content-type":"application/json",
+        ...
+    },
+    params: {
+        "id":"1"
+    },
+    body: {
+        "name": "Aalderan",
+        "type": "Asteroid Belt",
+        "atmosphere": "none"
+    }
+}
+*/
 
 // Add planet
 app.post('/planets', (req, res, next) => {
@@ -27,15 +46,18 @@ app.post('/planets', (req, res, next) => {
     const gravity = req.body.gravity;
     const life = req.body.life;
 
+    // const { planet_name, type, atmosphere, gravity, life } = req.body;
+
     console.log(`Planet: ${planet_name}, Type: ${type}, Atmosphere: ${atmosphere}, Gravity: ${gravity}, Life: ${life}`);
 
+    // if planet name is falsy OR type is falsy OR gravity is not a number
     if (!planet_name || !type || Number.isNaN(gravity)) {
-        res.status(400).json({ error: 'Invalid data in the request.' });
+        res.status(400).send({ error: 'Invalid data in the request.' });
         return; // This return statement ensures no further code in this route is executed after sending the response
     }
 
     pool.query(
-        'INSERT INTO SolarSystem (planet_name, type, atmosphere, gravity, life) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        'INSERT INTO solarSystem (planet_name, type, atmosphere, gravity, life) VALUES ($1, $2, $3, $4, $5) RETURNING *',
         [planet_name, type, atmosphere, gravity, life]
     )
         .then((data) => {
